@@ -1,0 +1,23 @@
+{#{{ question }}#}
+
+{#<h1>#}
+{#    {{ question.question_text }}#}
+{#    <ul>#}
+{#        {% for choice in question.choice_set.all %}#}
+{#            <li>#}
+{#            {{ choice.choice_text }}#}
+{#            </li>#}
+{##}
+{#        {% endfor %}#}
+{##}
+{#    </ul>#}
+{#</h1>#}
+
+<h>
+    {{ question.question_text }}
+    {% if error_message %}
+        <p><strong>{{ error_message }}</strong></p>
+    {% endif %}
+
+    <form action="{% url 'polls:vote question_id %}" method="post">
+</h>
