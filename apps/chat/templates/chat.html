@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Home</title>
+    {% load static %}
+    {% csrf_token %}
+    <style>
+        .textarea-inherit {
+            width: 100%;
+            overflow: auto;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+        <textarea id="chat-message-history" class="textarea-inherit" rows="50" disabled="disabled"></textarea>
+        <input id="chat-message-input" type="text" class="textarea-inherit" >
+        <input id="chat-message-submit" type="button" value="Send">
+        <input id="chat-message-clear" type="button" value="Clear">
+
+
+    <script>
+        const sendButton = document.getElementById('chat-message-submit');
+        const clearButton = document.getElementById('chat-message-clear');
+        sendButton.addEventListener('click', onSend);
+        clearButton.addEventListener('click', onClear);
+        function onSend() {
+            var question = $('[id="chat-message-input"]').val();
+            var history = $("#chat-message-history").text();
+            history += "【You】：" + question + "\n";
+            $("#chat-message-history").text(history);
+
+            $("#chat-message-input").val("");
+            $.ajax({
+                url: '/chat/',
+                type: 'post',
+                data: { question:  question, csrfmiddlewaretoken:'{{ csrf_token }}'},
+                success: function(res) {
+                    console.log(res);
+                    var history = $("#chat-message-history").text();
+                    history += "【A I】：" + res["data"]["answer"] + "\n\n\n"
+                    $("#chat-message-history").text(history);
+                }
+            })
+        }
+
+        function onClear() {
+            $("#chat-message-input").val("");
+            $.ajax({
+                url: '/chat/',
+                type: 'delete',
+                data: {csrfmiddlewaretoken:'{{ csrf_token }}'},
+                success: function(res) {
+                    console.log(res);
+                    $("#chat-message-history").text("");
+                }
+            })
+        }
+    </script>
+</body>
+</html>
